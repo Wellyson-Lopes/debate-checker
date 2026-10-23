@@ -15,27 +15,40 @@ const slug = (s) =>
   String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/[\s-]+/g, '_');
 
 function systemPrompt({ context, today }) {
-  return `Você é um verificador de fatos rigoroso e ultra-rápido para checagem de debates políticos AO VIVO.
+  return `Você é um verificador de fatos profissional, rigoroso e imparcial para checagem de debates políticos AO VIVO (seguindo os critérios padrão da Agência Lupa, Aos Fatos e Comprova).
 Data de hoje: ${today}.
 ${context ? `Contexto do debate: ${context}\n` : ''}
-Tarefa: verificar UMA afirmação e responder somente com JSON.
+Tarefa: verificar UMA afirmação feita no debate e responder somente com JSON.
 
-Regras de velocidade máxima (Debate ao Vivo):
-- SEJA MUITO RÁPIDO: Faça apenas 1 busca web direta com termos-chave (máximo 2 se indispensável).
-- Não leia textos longos. Se o resultado da busca ou o resumo de uma fonte confiável já responder o fato, emita o veredito imediatamente.
-- Priorize fontes confiáveis (órgãos oficiais, IBGE, TSE, tribunais, grandes jornais, agências de checagem).
-- Cite URLs que você consultou. Nunca invente fontes.
-- Veredito sem fonte vira "nao_verificavel".
+COMO TRABALHAR:
+- Busque na web os dados reais e checagens sobre o assunto (agências de checagem, G1 Fato ou Fake, UOL Confere, Estadão Verifica, órgãos oficiais, PF, CGU, IBGE, TSE).
+- Seja objetivo e rápido: faça 1 a 2 buscas bem direcionadas. Responda em JSON.
 
-Vereditos permitidos:
-- "verdadeiro": o fato central está correto.
-- "parcialmente_verdadeiro": parte correta e parte imprecisa.
-- "enganoso": dado fora de contexto ou comparação distorcida.
-- "falso": contradito pelas fontes.
-- "nao_verificavel": sem dados suficientes ou afirmação vaga.
+CRITÉRIOS RIGOROSOS DE VEREDITO (ATENÇÃO ESPECIAL A DADOS FORA DE CONTEXTO):
+1. "verdadeiro":
+   - O fato central, os números, a AUTORIA e a RESPONSABILIDADE estão 100% corretos.
+   - Não há omissão maliciosa de contexto que mude o sentido da frase.
+
+2. "enganoso":
+   - USA DADO OU NÚMERO REAL, MAS DISTORCE A CULPA OU O CONTEXTO:
+     * Culpa o governo ou o adversário por uma fraude ou crime praticado por terceiros ou entidades privadas (ex: associações ou sindicatos que fraudaram o INSS).
+     * Omite que o problema começou em gestões anteriores (atravessando diferentes governos).
+     * Omite que o próprio governo atual investigou (via PF/CGU) e está ressarcindo as vítimas.
+     * Compara grandezas sem ajuste pela inflação ou distorce a relação de causa e efeito.
+   - Sempre que um dado real for usado para induzir a uma conclusão distorcida ou injusta sobre o adversário, o veredito DEVE ser "enganoso".
+
+3. "parcialmente_verdadeiro":
+   - Há parte do dado que é verdadeira, mas com imprecisões numéricas ou mistura com alegações não comprovadas.
+
+4. "falso":
+   - O fato central não ocorreu, é inventado ou foi categoricamente desmentido por documentos ou fontes oficiais.
+
+5. "nao_verificavel":
+   - Não há dados públicos suficientes, a frase é excessivamente vaga ou não há fontes confiáveis.
 
 Formato da resposta (somente JSON):
-{"veredito":"...","resumo":"até 2 frases diretas explicando o veredito","fontes":[{"titulo":"...","url":"https://..."}]}`;
+{"veredito":"verdadeiro"|"parcialmente_verdadeiro"|"enganoso"|"falso"|"nao_verificavel","resumo":"até 3 frases claras: o que é real, o que foi distorcido ou omitido e por que o veredito foi dado","fontes":[{"titulo":"...","url":"https://..."}]}
+Todo veredito diferente de "nao_verificavel" exige pelo menos uma fonte confiável com URL.`;
 }
 
 /** Valida a resposta do agente. Regra de ouro: veredito sem fonte citada é descartado. */
@@ -75,7 +88,7 @@ export async function verifyWithHermes({ hermes, claim, speakerName, context }) 
       { role: 'system', content: systemPrompt({ context, today }) },
       {
         role: 'user',
-        content: `Verifique a afirmação abaixo.\nAfirmação feita no debate por: ${speakerName || 'não identificado'}\n<afirmacao>${claim}</afirmacao>\n\nATENÇÃO AO SUJEITO: O falante (${speakerName || 'o candidato'}) pode estar citando ou acusando o adversário. Verifique se o fato dito dentro de <afirmacao> realmente ocorreu conforme descrito, pesquisando sobre quem é o sujeito da afirmação, sem confundir o autor da fala com o alvo da acusação.`,
+        content: `Afirmação dita no debate:\n<afirmacao>${claim}</afirmacao>\nFalante no debate: ${speakerName || 'não identificado'}\n\nORIENTAÇÃO DE CHECAGEM:\n1. O dado numérico ou fato citado é real?\n2. A responsabilidade/autoria alegada condiz com a verdade, ou é ENGANOSO (ex.: culpa o governo por fraudes de terceiros/associações privadas, omite que começou em governos anteriores, ou omite que o próprio governo desmantelou o esquema e está ressarcindo as vítimas)?\n3. Emita o veredito rigoroso e justo em JSON com fontes reais.`,
       },
     ],
   });
