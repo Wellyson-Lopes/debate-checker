@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Debate Checker",
+  "version": "0.1.0",
+  "description": "Ouve um debate ao vivo na aba, transcreve, separa quem fala e checa as afirmações com fontes.",
+  "minimum_chrome_version": "116",
+  "permissions": ["tabCapture", "offscreen", "sidePanel", "storage", "activeTab"],
+  "background": { "service_worker": "background.js" },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "action": { "default_title": "Iniciar o Debate Checker nesta aba" },
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }
+}

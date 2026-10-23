@@ -1,0 +1,20 @@
+{
+  "name": "debate-checker-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Servidor do Debate Checker: transcrição ao vivo, extração de afirmações e checagem via Hermes Agent",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "check": "node src/selftest.js",
+    "check:hermes": "node src/selftest.js --verify",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=20.3"
+  }
+}

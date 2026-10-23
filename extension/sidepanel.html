@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Debate Checker</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span id="dot" class="dot idle" aria-hidden="true"></span><h1>Debate Checker</h1></div>
+    <div class="actions">
+      <button id="btnStart" class="btn primary" type="button">Iniciar nesta aba</button>
+      <button id="btnStop" class="btn" type="button" hidden>Parar</button>
+      <button id="btnExport" class="btn ghost" type="button" title="Baixar as checagens em Markdown">Exportar</button>
+    </div>
+  </header>
+
+  <p id="statusLine" class="status" role="status">Abra a aba do debate e clique em Iniciar (ou no ícone da extensão).</p>
+
+  <div class="cand-bar" aria-label="Nomes dos candidatos para a checagem">
+    <div class="cand-input-wrap">
+      <span class="mark A"></span>
+      <input id="quickNameA" type="text" value="Lula" placeholder="Lula" title="Nome do Candidato A">
+    </div>
+    <span class="vs">vs</span>
+    <div class="cand-input-wrap">
+      <span class="mark B"></span>
+      <input id="quickNameB" type="text" value="Flávio Bolsonaro" placeholder="Flávio Bolsonaro" title="Nome do Candidato B">
+    </div>
+  </div>
+
+  <section class="board" aria-label="Placar das checagens">
+    <div class="cand" id="candA"><div class="chead"><span class="mark A"></span><span class="cname">Candidato A</span></div><div class="bar"></div><div class="chips"></div></div>
+    <div class="cand" id="candB"><div class="chead"><span class="mark B"></span><span class="cname">Candidato B</span></div><div class="bar"></div><div class="chips"></div></div>
+  </section>
+
+  <section id="speakers" class="speakers" hidden></section>
+
+  <label class="only"><input type="checkbox" id="onlyClaims"> Mostrar só falas com afirmações checáveis</label>
+  <div id="interim" class="interim" hidden></div>
+  <main id="feed" class="feed"></main>
+
+  <details class="settings">
+    <summary>Configurações e teste</summary>
+    <div class="grid">
+      <label>Servidor<input id="serverUrl" type="text" spellcheck="false"></label>
+      <label>Token (opcional)<input id="token" type="password" autocomplete="off"></label>
+      <label>Idioma do debate
+        <select id="language">
+          <option value="pt-BR">Português (Brasil)</option>
+          <option value="en-US">Inglês (EUA)</option>
+          <option value="es">Espanhol</option>
+          <option value="fr">Francês</option>
+          <option value="multi">Vários idiomas</option>
+        </select>
+      </label>
+      <label>Nome do candidato A<input id="nameA" type="text" value="Lula"></label>
+      <label>Nome do candidato B<input id="nameB" type="text" value="Flávio Bolsonaro"></label>
+      <label class="wide">Contexto do debate (ajuda a checagem)<input id="context" type="text" value="Debate presidencial entre Lula e Flávio Bolsonaro" placeholder="Ex.: debate presidencial entre Lula e Flávio Bolsonaro"></label>
+    </div>
+    <div class="row"><button id="save" class="btn primary" type="button">Salvar</button><span id="saved" class="muted"></span></div>
+    <p class="muted">Servidor e idioma só mudam quando você inicia de novo. Nomes valem na hora.</p>
+
+    <h2>Testar sem áudio</h2>
+    <div class="row"><button id="testStart" class="btn" type="button">Iniciar modo teste</button></div>
+    <div class="grid">
+      <label>Voz número<input id="testSpeaker" type="number" min="0" max="9" value="0"></label>
+      <label class="wide">Fala de teste<textarea id="testText" rows="3" placeholder="Ex.: No meu governo o desemprego caiu para 6% em 2025."></textarea></label>
+    </div>
+    <div class="row"><button id="testSend" class="btn" type="button">Enviar fala de teste</button></div>
+  </details>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
