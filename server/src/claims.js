@@ -17,13 +17,10 @@ REGRAS CRÍTICAS DE SUJEITO (AUTOR DA FALA vs ALVO DA ACUSAÇÃO):
    - A afirmação precisa ser autossuficiente para que uma busca no Google/web saiba exatamente quem pesquisar.
 
 3. IDENTIFICAÇÃO DO FALANTE ("falante_identificado"):
-   - INTERMEDIÁRIOS / MEDIAÇÃO ("OTHER"): Apresentadores, mediadores ou jornalistas da bancada que conduzem o debate, explicam regras, controlam o tempo, chamam blocos/intervalos ou fazem perguntas de jornalistas. Se a fala for dessa natureza, classifique expressamente como "OTHER".
-   - CANDIDATOS ("A" ou "B"):
-     * Se a fala anterior da mediação passou a palavra para um candidato ("Candidato Lula...", "Flávio Bolsonaro..."), o falante atual é esse candidato ("A" se Lula, "B" se Flávio).
-     * Se o falante diz "no meu governo", "quando fui presidente", "PT" -> "A" (Lula).
-     * Se o falante fala de "meu mandato no senado", "governo do meu pai", "família Bolsonaro" -> "B" (Flávio Bolsonaro).
-     * Se o falante estiver fazendo pergunta direta de confronto ("Candidato, quero saber sobre...", "Você que defendeu..."), ele é um dos candidatos debatendo (NUNCA marque como "OTHER").
-   - Se não tiver certeza, retorne null.
+   - CUIDADO COM CITAÇÕES AO ADVERSÁRIO: Quando Lula fala "O governo Bolsonaro..." ou "A família Bolsonaro...", quem está falando é LULA ("A"), e não Bolsonaro! Só marque "B" se a pessoa estiver se defendendo ou falando na primeira pessoa do próprio grupo ("meu pai", "nosso mandato", "minha bancada").
+   - Quando Flávio Bolsonaro fala "O PT roubou..." ou "O governo Lula aumentou impostos...", quem está falando é FLÁVIO ("B"), e não Lula!
+   - INTERMEDIÁRIOS / MEDIAÇÃO ("OTHER"): Apresentadores ou jornalistas que conduzem o debate, controlam o tempo ou ditam as regras.
+   - Retorne "A", "B", "OTHER", ou null se incerto.
 
 4. AFIRMAÇÕES CHECÁVEIS:
    - Apenas dados factuais verificáveis: números, estatísticas, datas, compras, votos, leis, orçamentos, investigações.

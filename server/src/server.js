@@ -106,13 +106,14 @@ function handleSession(ws, cfg) {
     const norm = normalize(text);
 
     // 1. Passagem de palavra determinística (quando a fala anterior disse quem falaria a seguir):
-    if (s.expectedNextSpeaker && s.lastSpeaker !== speaker && (!s.roles.has(speaker) || s.roles.get(speaker) === 'OTHER')) {
+    // Se a fala anterior disse "Candidato Lula...", quem começa a falar AGORA é Lula (A).
+    if (s.expectedNextSpeaker && s.lastSpeaker !== speaker) {
       s.roles.set(speaker, s.expectedNextSpeaker);
       s.expectedNextSpeaker = null;
       pushSpeakers();
     }
 
-    // Se quem está falando agora passa a palavra para alguém:
+    // Se quem está falando agora passa a palavra para alguém (ex: mediador ou oponente fazendo pergunta):
     if (/candidato lula|presidente lula|vez (do|de) lula|pergunta (do|de) lula|palavra (com|ao|do) lula|lula comeca|com a palavra lula|lula tem a palavra|lula seu tempo/i.test(norm)) {
       s.expectedNextSpeaker = 'A';
     } else if (/candidato flavio|senador flavio|flavio bolsonaro|vez (do|de) flavio|pergunta (do|de) flavio|palavra (com|ao|do) flavio|flavio comeca|com a palavra flavio|flavio tem a palavra|flavio seu tempo/i.test(norm)) {
@@ -120,17 +121,21 @@ function handleSession(ws, cfg) {
     }
 
     // 2. Reconhecimento direto por pistas inequívocas de fala:
-    if (!s.roles.has(speaker) || s.roles.get(speaker) === 'OTHER') {
-      if (/meu governo|quando fui presidente|quando presidi|nosso governo|mapa da fome|minha gestao como presidente/i.test(norm)) {
-        s.roles.set(speaker, 'A');
-        pushSpeakers();
-      } else if (/meu mandato de senador|meu mandato no senado|governo bolsonaro|governo do meu pai|familia bolsonaro|como senador pelo rio/i.test(norm)) {
-        s.roles.set(speaker, 'B');
-        pushSpeakers();
-      } else if (/direito de resposta|regras do debate|sorteio de temas|bloco do debate|tempo esgotado|intervalo comercial/i.test(norm)) {
-        s.roles.set(speaker, 'OTHER');
-        pushSpeakers();
-      }
+    // ATENÇÃO: Nunca inverta se o falante estiver apenas citando o oponente!
+    // Lula falando de si mesmo:
+    if (/meu governo|quando fui presidente|quando presidi|quando eu era presidente|nosso governo do pt|minha gestao como presidente/i.test(norm)) {
+      s.roles.set(speaker, 'A');
+      pushSpeakers();
+    } 
+    // Flávio Bolsonaro falando de si mesmo ou do pai:
+    else if (/meu mandato de senador|meu mandato no senado|como senador pelo rio|governo do meu pai|meu pai jair bolsonaro/i.test(norm)) {
+      s.roles.set(speaker, 'B');
+      pushSpeakers();
+    } 
+    // Mediação estrita:
+    else if (/direito de resposta|regras do debate|sorteio de temas|bloco do debate|tempo esgotado|intervalo comercial/i.test(norm)) {
+      s.roles.set(speaker, 'OTHER');
+      pushSpeakers();
     }
 
     // 3. Atualiza histórico de contexto SEMPRE:

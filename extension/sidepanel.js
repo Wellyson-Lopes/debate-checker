@@ -264,11 +264,15 @@ function setRole(sp, role) {
 function swapAB() {
   const spA = Object.keys(state.roles).find((k) => state.roles[k] === 'A');
   const spB = Object.keys(state.roles).find((k) => state.roles[k] === 'B');
-  if (spA === undefined || spB === undefined) return;
-  state.roles[spA] = 'B';
-  state.roles[spB] = 'A';
-  sendToServer({ type: 'map', speaker: Number(spA), role: 'B' });
-  sendToServer({ type: 'map', speaker: Number(spB), role: 'A' });
+  if (spA === undefined && spB === undefined) return;
+  if (spA !== undefined) {
+    state.roles[spA] = 'B';
+    sendToServer({ type: 'map', speaker: Number(spA), role: 'B' });
+  }
+  if (spB !== undefined) {
+    state.roles[spB] = 'A';
+    sendToServer({ type: 'map', speaker: Number(spB), role: 'A' });
+  }
   repaintAll();
 }
 
@@ -304,7 +308,7 @@ function renderSpeakers() {
   }
   const hasA = Object.values(state.roles).includes('A');
   const hasB = Object.values(state.roles).includes('B');
-  if (hasA && hasB) {
+  if (hasA || hasB) {
     const sw = make('button', 'btn', 'Trocar A ⇄ B');
     sw.type = 'button';
     sw.addEventListener('click', swapAB);
