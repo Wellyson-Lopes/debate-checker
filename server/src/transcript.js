@@ -3,7 +3,7 @@
  * Uma fala é entregue quando o falante muda, quando o Deepgram marca fim de fala, ou após um tempo parado.
  */
 export class TurnAssembler {
-  constructor(onTurn, { idleMs = 3500, maxChars = 600 } = {}) {
+  constructor(onTurn, { idleMs = 3000, maxChars = 1200 } = {}) {
     this.onTurn = onTurn;
     this.idleMs = idleMs;
     this.maxChars = maxChars;
@@ -31,8 +31,17 @@ export class TurnAssembler {
       this.pending.text = `${this.pending.text} ${seg.text}`.trim();
       this.lastSpeaker = seg.speaker;
     }
-    if (speechFinal || (this.pending && this.pending.text.length > this.maxChars)) this.flush();
-    else this.#arm();
+
+    const text = this.pending ? this.pending.text : '';
+    const wordsTotal = text.split(/\s+/).filter(Boolean).length;
+    const endsWithTerminal = /[.?!]\s*$/.test(text);
+
+    // Evita fatiar frases no meio: só entrega de imediato se o bloco ficou grande ou concluiu frase com pausa real
+    if (text.length >= this.maxChars || (speechFinal && endsWithTerminal && wordsTotal >= 18)) {
+      this.flush();
+    } else {
+      this.#arm(speechFinal ? 2200 : this.idleMs);
+    }
   }
 
   /** Texto parcial para mostrar ao vivo: o que já está acumulado + o trecho provisório. */
@@ -50,9 +59,9 @@ export class TurnAssembler {
     if (turn && turn.text.trim()) this.onTurn(turn);
   }
 
-  #arm() {
+  #arm(ms = this.idleMs) {
     clearTimeout(this.timer);
-    this.timer = setTimeout(() => this.flush(), this.idleMs);
+    this.timer = setTimeout(() => this.flush(), ms);
   }
 
   dispose() {

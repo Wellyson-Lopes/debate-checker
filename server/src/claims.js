@@ -17,8 +17,12 @@ REGRAS CRÍTICAS DE SUJEITO (AUTOR DA FALA vs ALVO DA ACUSAÇÃO):
    - A afirmação precisa ser autossuficiente para que uma busca no Google/web saiba exatamente quem pesquisar.
 
 3. IDENTIFICAÇÃO DO FALANTE ("falante_identificado"):
-   - Se a mediação passou a palavra para um candidato ("Candidato Lula...", "Flávio Bolsonaro..."), identifique como "A" (Lula) ou "B" (Flávio).
-   - Se for estritamente fala de condução técnica, regras ou tempo, marque "OTHER". Se for cumprimento ou início de fala de candidato, NUNCA marque "OTHER".
+   - INTERMEDIÁRIOS / MEDIAÇÃO ("OTHER"): Apresentadores, mediadores ou jornalistas da bancada que conduzem o debate, explicam regras, controlam o tempo, chamam blocos/intervalos ou fazem perguntas de jornalistas. Se a fala for dessa natureza, classifique expressamente como "OTHER".
+   - CANDIDATOS ("A" ou "B"):
+     * Se a fala anterior da mediação passou a palavra para um candidato ("Candidato Lula...", "Flávio Bolsonaro..."), o falante atual é esse candidato ("A" se Lula, "B" se Flávio).
+     * Se o falante diz "no meu governo", "quando fui presidente", "PT" -> "A" (Lula).
+     * Se o falante fala de "meu mandato no senado", "governo do meu pai", "família Bolsonaro" -> "B" (Flávio Bolsonaro).
+     * Se o falante estiver fazendo pergunta direta de confronto ("Candidato, quero saber sobre...", "Você que defendeu..."), ele é um dos candidatos debatendo (NUNCA marque como "OTHER").
    - Se não tiver certeza, retorne null.
 
 4. AFIRMAÇÕES CHECÁVEIS:

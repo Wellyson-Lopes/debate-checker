@@ -12,8 +12,8 @@ export function openDeepgram({ apiKey, model, language, handlers }) {
     punctuate: 'true',
     smart_format: 'true',
     interim_results: 'true',
-    endpointing: '700',
-    utterance_end_ms: '1500',
+    endpointing: '1200',
+    utterance_end_ms: '2000',
   });
   const ws = new WebSocket(`wss://api.deepgram.com/v1/listen?${params}`, {
     headers: { Authorization: `Token ${apiKey}` },

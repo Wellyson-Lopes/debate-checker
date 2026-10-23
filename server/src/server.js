@@ -159,19 +159,10 @@ function handleSession(ws, cfg) {
     }
     if (s.closed) return;
 
-    // Se o extrator identificou candidato A ou B:
-    if (out.detectedRole && out.detectedRole !== 'OTHER') {
-      if (!s.roles.has(speaker) || s.roles.get(speaker) === 'OTHER') {
+    // Se o extrator identificou o papel do falante (A, B ou OTHER):
+    if (out.detectedRole) {
+      if (!s.roles.has(speaker) || (s.roles.get(speaker) === 'OTHER' && out.detectedRole !== 'OTHER')) {
         s.roles.set(speaker, out.detectedRole);
-        // Regra de exclusão: se identificamos A, a outra voz debatendo é B e vice-versa
-        const rolesValues = [...s.roles.values()];
-        if (out.detectedRole === 'A' && !rolesValues.includes('B')) {
-          const otherCandidate = [...s.speakersSeen].find((sp) => sp !== speaker && !s.roles.has(sp));
-          if (otherCandidate !== undefined) s.roles.set(otherCandidate, 'B');
-        } else if (out.detectedRole === 'B' && !rolesValues.includes('A')) {
-          const otherCandidate = [...s.speakersSeen].find((sp) => sp !== speaker && !s.roles.has(sp));
-          if (otherCandidate !== undefined) s.roles.set(otherCandidate, 'A');
-        }
         pushSpeakers();
       }
     }
